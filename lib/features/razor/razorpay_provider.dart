@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rentschedule/features/razor/razorpay_service.dart';
+import 'package:rentschedule/models/api_response.dart';
 
 class RazorpayProvider extends ChangeNotifier {
   final RazorpayService _razorpayService;
@@ -17,11 +18,17 @@ class RazorpayProvider extends ChangeNotifier {
     isLoading = true;
     notifyListeners();
 
-    shortUrl = await _razorpayService.createSubscription(
+    ApiResponse<String>? response = await _razorpayService.createSubscription(
       email,
       contact,
       amount,
     );
+
+    if (response != null) {
+      shortUrl = response.data;
+    } else {
+      shortUrl = null;
+    }
 
     isLoading = false;
     notifyListeners();

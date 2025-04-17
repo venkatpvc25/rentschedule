@@ -21,4 +21,15 @@ class AppStrings {
   static const String loading = "Loading...";
   static const String noInternet =
       "No internet connection. Please check your settings.";
+
+  // Dio Service Error Messages
+  static const String connectionTimeout =
+      'Connection timed out. Please try again.';
+  static const String badRequest = 'Bad request. Please check your input.';
+  static const String unauthorized = 'Unauthorized. Please log in again.';
+  static const String serverError = 'Server error. Please try again later.';
+  static const String unknownError =
+      'No internet connection. Please check your network.';
+  static const String unexpectedError = 'Unexpected error occurred.';
+  static const String genericError = 'Something went wrong. Please try again.';
 }
