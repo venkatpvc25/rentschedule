@@ -21,7 +21,10 @@ class _EmailAuthScreenState extends State<EmailAuthScreen> {
   final _passwordController = TextEditingController();
   bool _isSignUp = false;
 
-  Future<void> _handleAuth(AuthService authService, LoaderProvider loader) async {
+  Future<void> _handleAuth(
+    AuthService authService,
+    LoaderProvider loader,
+  ) async {
     if (!_formKey.currentState!.validate()) {
       // If the form is not valid, return early
       return;
@@ -37,7 +40,9 @@ class _EmailAuthScreenState extends State<EmailAuthScreen> {
         final res = await authService.signUp(email: email, password: password);
         if (res.user != null) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Check your email to verify your account")),
+            const SnackBar(
+              content: Text("Check your email to verify your account"),
+            ),
           );
         }
       } else {
@@ -45,9 +50,9 @@ class _EmailAuthScreenState extends State<EmailAuthScreen> {
         widget.onEmailVerified?.call(email);
       }
     } on AuthException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.message)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.message)));
     } finally {
       loader.hideLoader();
     }
@@ -68,7 +73,6 @@ class _EmailAuthScreenState extends State<EmailAuthScreen> {
     return Scaffold(
       body: Center(
         child: GlobalLoaderScreen(
-          isLoading: loader.isLoading,
           child: BaseScreen(
             child: Form(
               key: _formKey, // Attach the form key
@@ -81,13 +85,19 @@ class _EmailAuthScreenState extends State<EmailAuthScreen> {
                     decoration: const InputDecoration(labelText: 'Email'),
                     keyboardType: TextInputType.emailAddress,
                     inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')),
+                      FilteringTextInputFormatter.allow(
+                        RegExp(
+                          r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+                        ),
+                      ),
                     ],
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Email is required';
                       }
-                      final emailRegex = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
+                      final emailRegex = RegExp(
+                        r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+                      );
                       if (!emailRegex.hasMatch(value)) {
                         return 'Enter a valid email address';
                       }
@@ -100,7 +110,9 @@ class _EmailAuthScreenState extends State<EmailAuthScreen> {
                     decoration: const InputDecoration(labelText: 'Password'),
                     obscureText: true,
                     inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$')),
+                      FilteringTextInputFormatter.allow(
+                        RegExp(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$'),
+                      ),
                     ],
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -109,7 +121,9 @@ class _EmailAuthScreenState extends State<EmailAuthScreen> {
                       if (value.length < 8) {
                         return 'Password must be at least 8 characters long';
                       }
-                      final passwordRegex = RegExp(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$');
+                      final passwordRegex = RegExp(
+                        r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$',
+                      );
                       if (!passwordRegex.hasMatch(value)) {
                         return 'Password must contain letters and numbers';
                       }
@@ -123,9 +137,11 @@ class _EmailAuthScreenState extends State<EmailAuthScreen> {
                   ),
                   TextButton(
                     onPressed: () => setState(() => _isSignUp = !_isSignUp),
-                    child: Text(_isSignUp
-                        ? 'Already have an account? Sign In'
-                        : 'Don’t have an account? Sign Up'),
+                    child: Text(
+                      _isSignUp
+                          ? 'Already have an account? Sign In'
+                          : 'Don’t have an account? Sign Up',
+                    ),
                   ),
                 ],
               ),

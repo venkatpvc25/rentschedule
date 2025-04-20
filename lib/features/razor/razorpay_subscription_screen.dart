@@ -3,10 +3,14 @@ import 'package:provider/provider.dart';
 import 'package:rentschedule/features/razor/razorpay_provider.dart';
 import 'package:rentschedule/features/razor/razorpay_service.dart';
 import 'package:rentschedule/features/razor/subscription_list_screen.dart';
-import 'package:rentschedule/forms/subscription_form.dart';
-import 'package:rentschedule/forms/tenant_form.dart';
+import 'package:rentschedule/providers/loader_provider.dart';
 import 'package:rentschedule/strings.dart';
+import 'package:rentschedule/utils/form_field_wrapper.dart';
+import 'package:rentschedule/utils/form_vlidators.dart';
+import 'package:rentschedule/widgets/base_screen.dart';
+import 'package:rentschedule/widgets/bulleting_point.dart';
 import 'package:rentschedule/widgets/global_loader_screen.dart';
+import 'package:rentschedule/widgets/share_link.dart';
 import 'package:rentschedule/widgets/successfull_screen.dart';
 
 // landlord subscription screen
@@ -25,23 +29,11 @@ class SubscriptionScreen extends StatefulWidget {
 }
 
 class _SubscriptionScreenState extends State<SubscriptionScreen> {
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController contactController = TextEditingController();
-  final TextEditingController amountController = TextEditingController();
-  final _formKey = GlobalKey<FormState>();
-
-  @override
-  void dispose() {
-    emailController.dispose();
-    contactController.dispose();
-    amountController.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
+    final loader = Provider.of<LoaderProvider>(context, listen: false);
     return ChangeNotifierProvider(
-      create: (_) => RazorpayProvider(RazorpayService()),
+      create: (_) => RazorpayProvider(RazorpayService(), loader),
       child: Consumer<RazorpayProvider>(
         builder: (context, provider, child) {
           return Scaffold(
@@ -49,32 +41,79 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
             body:
                 provider.shortUrl == null
                     ? GlobalLoaderScreen(
-                      isLoading: provider.isLoading,
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
+                      child: BaseScreen(
                         child: Form(
-                          key: _formKey,
+                          key: provider.formKey,
                           child: SingleChildScrollView(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                LandlordForm(
-                                  emailController: emailController,
-                                  contactController: contactController,
+                                const Text(
+                                  '📋 How Subscription Works',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
-                                SizedBox(height: 20),
-                                SubscriptionDetailsForm(
-                                  amountController: amountController,
+                                const SizedBox(height: 8),
+                                const BulletText(
+                                  "This will auto-charge your tenant every billing cycle.",
+                                ),
+                                const BulletText(
+                                  "Tenant must authorize payment through Razorpay after you share the link.",
+                                ),
+                                const BulletText(
+                                  "Razorpay handles recurring billing securely.",
+                                ),
+                                const BulletText(
+                                  "You only need to enter a few required fields to set this up.",
+                                ),
+                                const BulletText(
+                                  "Amount, Billing Count, and Start Date are mandatory.",
+                                ),
+                                const SizedBox(height: 24),
+                                FormFieldWrapper(
+                                  child: TextFormField(
+                                    controller: provider.amountController,
+                                    decoration: InputDecoration(
+                                      labelText: 'Amount',
+                                    ),
+                                    keyboardType: TextInputType.number,
+                                    validator: validateAmount,
+                                  ),
+                                ),
+                                FormFieldWrapper(
+                                  child: TextFormField(
+                                    controller: provider.totalCountController,
+                                    decoration: InputDecoration(
+                                      labelText: 'No of Months',
+                                    ),
+                                    keyboardType: TextInputType.number,
+                                    validator: (val) {
+                                      if (val == null || val.trim().isEmpty)
+                                        return 'Required';
+                                      final count = int.tryParse(val);
+                                      if (count == null || count < 1)
+                                        return 'Must be at least 1';
+                                      return null;
+                                    },
+                                  ),
+                                ),
+                                FormFieldWrapper(
+                                  child: TextFormField(
+                                    controller: provider.quantityController,
+                                    decoration: InputDecoration(
+                                      labelText: 'Billing Cycle',
+                                    ),
+                                    keyboardType: TextInputType.number,
+                                  ),
                                 ),
                                 SizedBox(height: 20),
                                 ElevatedButton(
                                   onPressed: () {
-                                    if (_formKey.currentState!.validate()) {
-                                      provider.createSubscription(
-                                        emailController.text,
-                                        contactController.text,
-                                        int.parse(amountController.text),
-                                      );
+                                    if (provider.formKey.currentState!
+                                        .validate()) {
+                                      provider.createSubscription();
                                     }
                                   },
                                   child: Text(AppStrings.startSubscription),
@@ -85,23 +124,30 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                         ),
                       ),
                     )
-                    : GlobalSuccessScreen(
-                      title: 'Subscription',
-                      message: 'Subscription created successfully!',
-                      details: [
-                        Text('Tenant Email: ${emailController.text}'),
-                        Text('Tenant Contact: ${contactController.text}'),
-                        Text('Subscription Amount: ${amountController.text}'),
-                      ],
-                      onGoBack: () {
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => SubscriptionListScreen(),
+                    : BaseScreen(
+                      child: GlobalSuccessScreen(
+                        title: 'Subscription',
+                        message: 'Subscription created successfully!',
+                        child: ShareLinkWidget(
+                          shortUrl: provider.shortUrl!,
+                          deepLink: 'deepLink',
+                          playStoreLink: 'playStoreLink',
+                        ),
+                        details: [
+                          Text(
+                            'Subscription Amount: ${provider.amountController.text}',
                           ),
-                          (route) => false,
-                        );
-                      },
+                        ],
+                        onGoBack: () {
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => SubscriptionListScreen(),
+                            ),
+                            (route) => false,
+                          );
+                        },
+                      ),
                     ),
           );
         },

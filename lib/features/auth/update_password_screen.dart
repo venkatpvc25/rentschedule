@@ -57,7 +57,6 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('Update Password')),
       body: GlobalLoaderScreen(
-        isLoading: isLoading,
         child: Padding(
           padding: const EdgeInsets.all(24.0),
           child: Form(
