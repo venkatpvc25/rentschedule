@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:rentschedule/features/razor/razorpay_service.dart';
-import 'package:rentschedule/models/api_response.dart';
 import 'package:rentschedule/models/subscription_request.dart';
 import 'package:rentschedule/providers/loader_provider.dart';
-import 'package:rentschedule/utils/global_error_handler.dart';
 
 class RazorpayProvider extends ChangeNotifier {
   final RazorpayService _razorpayService;
@@ -30,7 +28,7 @@ class RazorpayProvider extends ChangeNotifier {
     final response = await _razorpayService.createSubscription(subscription);
 
     if (response.hasError) {
-      GlobalErrorHandler.showError(response.error!);
+      //context.showErro(response.error!);
       shortUrl = null;
     } else {
       shortUrl = response.data;

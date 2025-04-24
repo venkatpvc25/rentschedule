@@ -7,9 +7,7 @@ class RentScheduleScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Rent Schedule')),
-      body: Center(
-        child: const Text('This is the Rent Schedule screen.'),
-      ),
+      body: Center(child: const Text('This is the Rent Schedule screen.')),
     );
   }
 }

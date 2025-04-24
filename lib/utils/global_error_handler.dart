@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
 
-class GlobalErrorHandler {
-  static final GlobalKey<NavigatorState> navigatorKey =
-      GlobalKey<NavigatorState>();
+extension MessageExtension on BuildContext {
+  void showMessage(String message) {
+    ScaffoldMessenger.of(this).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: const Color.fromARGB(255, 82, 142, 190),
+      ),
+    );
+  }
 
-  static void showError(String message) {
-    final context = navigatorKey.currentContext;
-    if (context != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(message),
-          backgroundColor: const Color.fromARGB(255, 165, 103, 98),
-        ),
-      );
-    } else {
-      print("Error: $message"); // fallback
-    }
+  void showError(String message) {
+    ScaffoldMessenger.of(this).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: const Color.fromARGB(255, 165, 103, 98),
+      ),
+    );
   }
 }

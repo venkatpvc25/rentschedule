@@ -166,6 +166,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.0.0"
+  flutter_otp_text_field:
+    dependency: "direct main"
+    description:
+      name: flutter_otp_text_field
+      sha256: e7e589dc51cde120d63da6db55f3cef618f5d013d12adba76137ca1a51ce1390
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.5.1+1"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -196,10 +204,10 @@ packages:
     dependency: "direct main"
     description:
       name: go_router
-      sha256: b465e99ce64ba75e61c8c0ce3d87b66d8ac07f0b35d0a7e0263fcfc10f99e836
+      sha256: "2b9ba6d4c247457c35a6622f1dee6aab6694a4e15237ff7c32320345044112b6"
       url: "https://pub.dev"
     source: hosted
-    version: "13.2.5"
+    version: "15.1.1"
   gotrue:
     dependency: transitive
     description:
@@ -272,6 +280,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.1.1"
+  logger:
+    dependency: "direct main"
+    description:
+      name: logger
+      sha256: be4b23575aac7ebf01f225a241eb7f6b5641eeaf43c6a8613510fc2f8cf187d1
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.5.0"
   logging:
     dependency: transitive
     description:
@@ -468,10 +484,10 @@ packages:
     dependency: transitive
     description:
       name: shared_preferences_android
-      sha256: c2c8c46297b5d6a80bed7741ec1f2759742c77d272f1a1698176ae828f8e1a18
+      sha256: "20cbd561f743a342c76c151d6ddb93a9ce6005751e7aa458baad3858bfbfb6ac"
       url: "https://pub.dev"
     source: hosted
-    version: "2.4.9"
+    version: "2.4.10"
   shared_preferences_foundation:
     dependency: transitive
     description:
@@ -705,18 +721,18 @@ packages:
     dependency: transitive
     description:
       name: web_socket
-      sha256: "3c12d96c0c9a4eec095246debcea7b86c0324f22df69893d538fcc6f1b8cce83"
+      sha256: bfe6f435f6ec49cb6c01da1e275ae4228719e59a6b067048c51e72d9d63bcc4b
       url: "https://pub.dev"
     source: hosted
-    version: "0.1.6"
+    version: "1.0.0"
   web_socket_channel:
     dependency: transitive
     description:
       name: web_socket_channel
-      sha256: "0b8e2457400d8a859b7b2030786835a28a8e80836ef64402abef392ff4f1d0e5"
+      sha256: d645757fb0f4773d602444000a8131ff5d48c9e47adfe9772652dd1a4f2d45c8
       url: "https://pub.dev"
     source: hosted
-    version: "3.0.2"
+    version: "3.0.3"
   webview_flutter:
     dependency: "direct main"
     description:

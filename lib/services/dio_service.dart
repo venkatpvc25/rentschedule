@@ -1,6 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:rentschedule/models/api_error.dart';
-import 'package:rentschedule/strings.dart';
 
 class DioService {
   late Dio _dio;
@@ -30,7 +28,7 @@ class DioService {
           print("Response: ${response.statusCode} ${response.data}");
           return handler.next(response);
         },
-        onError: (DioError error, handler) {
+        onError: (DioException error, handler) {
           print("Error: ${error.message}");
           print("Error Type: ${error.type}");
           print("Error Response: ${error.response?.data}");

@@ -1,10 +1,9 @@
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:rentschedule/features/auth/signup_screen.dart';
 import 'package:rentschedule/features/razor/razorpay_subscription_screen.dart';
 import 'package:rentschedule/features/razor/subscription_list_screen.dart';
 import 'package:rentschedule/screens/add_tenancy_screen.dart';
 import 'package:rentschedule/screens/dashboard_screen.dart';
-import 'package:rentschedule/screens/otp_login_screen.dart';
 import 'package:rentschedule/screens/rent_schedule.dart';
 import 'package:rentschedule/splash_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -16,13 +15,13 @@ bool isLoggedIn() {
 }
 
 final GoRouter router = GoRouter(
-  initialLocation: '/',
+  initialLocation: '/otp',
   redirect: (context, state) {
     final loggedIn = Supabase.instance.client.auth.currentSession != null;
-    final goingToLogin = state.fullPath == '/';
+    final goingToLogin = state.fullPath == '/otp';
 
     if (!loggedIn && !goingToLogin) {
-      return '/';
+      return '/otp';
     }
 
     if (loggedIn && goingToLogin) {
@@ -37,8 +36,7 @@ final GoRouter router = GoRouter(
       path: '/otp',
       name: 'otp',
       builder: (context, state) {
-        final phone = state.uri.queryParameters['phone']!;
-        return OTPScreen(phone: phone);
+        return EmailAuthScreen();
       },
     ),
     GoRoute(
@@ -46,10 +44,7 @@ final GoRouter router = GoRouter(
       name: 'home',
       builder: (context, state) => SubscriptionListScreen(),
     ),
-    GoRoute(
-      path: '/',
-      redirect: (_, __) => '/home', // default redirect
-    ),
+
     GoRoute(
       path: '/splash',
       name: 'splash',
