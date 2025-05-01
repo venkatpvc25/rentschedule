@@ -1,24 +1,27 @@
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rentschedule/features/auth/signup_screen.dart';
+import 'package:rentschedule/features/dashboard/dashboard_wrapper.dart';
 import 'package:rentschedule/features/razor/razorpay_subscription_screen.dart';
 import 'package:rentschedule/features/razor/subscription_list_screen.dart';
-import 'package:rentschedule/screens/add_tenancy_screen.dart';
-import 'package:rentschedule/screens/dashboard_screen.dart';
-import 'package:rentschedule/screens/rent_schedule.dart';
 import 'package:rentschedule/splash_screen.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:rentschedule/supbase.dart';
+import 'package:rentschedule/widgets/subscription_web_view.dart';
 
-final _supabase = Supabase.instance.client;
-
-bool isLoggedIn() {
-  return Supabase.instance.client.auth.currentSession != null;
-}
+final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
 final GoRouter router = GoRouter(
-  initialLocation: '/otp',
+  navigatorKey: _rootNavigatorKey,
+  initialLocation: '/splash', // Show splash screen first
   redirect: (context, state) {
-    final loggedIn = Supabase.instance.client.auth.currentSession != null;
+    final loggedIn = SupabaseClientInstance.client.auth.currentSession != null;
+    final goingToSplash = state.fullPath == '/splash';
     final goingToLogin = state.fullPath == '/otp';
+
+    if (goingToSplash) {
+      // Don't redirect away from splash
+      return null;
+    }
 
     if (!loggedIn && !goingToLogin) {
       return '/otp';
@@ -33,22 +36,19 @@ final GoRouter router = GoRouter(
 
   routes: [
     GoRoute(
+      path: '/splash',
+      name: 'splash',
+      builder: (context, state) => SplashScreen(),
+    ),
+    GoRoute(
       path: '/otp',
       name: 'otp',
-      builder: (context, state) {
-        return EmailAuthScreen();
-      },
+      builder: (context, state) => EmailAuthScreen(),
     ),
     GoRoute(
       path: '/home',
       name: 'home',
       builder: (context, state) => SubscriptionListScreen(),
-    ),
-
-    GoRoute(
-      path: '/splash',
-      name: 'splash',
-      builder: (context, state) => const SplashScreen(),
     ),
     GoRoute(
       path: '/',
@@ -58,17 +58,24 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: '/dashboard',
       name: 'dashboard',
-      builder: (context, state) => const DashboardScreen(),
+      builder: (context, state) => const DashboardWrapper(),
+      routes: [
+        GoRoute(
+          path: 'web-view', // Note: no leading slash here
+          name: 'tenant-subscription',
+          builder: (context, state) => WebView(),
+        ),
+      ],
     ),
     GoRoute(
       path: '/rent-schedule',
-      name: 'rentSchedule',
-      builder: (context, state) => const RentScheduleScreen(),
+      name: 'rent-schedule',
+      builder: (context, state) => SubscriptionScreen(),
     ),
     GoRoute(
       path: '/add-tenant',
-      name: 'addTenant',
-      builder: (context, state) => const AddTenantTenancyScreen(),
+      name: 'add-tenant',
+      builder: (context, state) => SubscriptionScreen(),
     ),
   ],
 );

@@ -1,42 +1,37 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'package:rentschedule/features/auth/auth_provider.dart';
+import 'package:rentschedule/services/onboarding_service.dart';
+import 'package:rentschedule/supbase.dart';
 
 class SplashScreen extends StatelessWidget {
-  const SplashScreen({super.key});
-
   @override
   Widget build(BuildContext context) {
-    // Perform login check after the splash screen is displayed
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      Future.delayed(const Duration(seconds: 3), () {
-        final bool isLoggedIn = false; // Replace with actual login check logic
-        if (isLoggedIn) {
-          Navigator.pushReplacementNamed(context, '/dashboard');
-        } else {
-          Navigator.pushReplacementNamed(context, '/');
-        }
-      });
+    Future.microtask(() async {
+      final session = SupabaseClientInstance.client.auth.currentSession;
+      final auth = Provider.of<AuthProvider>(context, listen: false);
+      if (session != null) {
+        // Try fetching profile
+        await OnboardingService()
+            .onBoardingUser(session.user.email ?? '')
+            .then((response) {
+              if (response.data != null) {
+                auth.profile = response.data;
+                context.goNamed('dashboard');
+              } else {
+                // No profile, force login
+                context.goNamed('otp');
+              }
+            })
+            .catchError((e) {
+              // Handle fetch error, go to OTP/login
+              context.goNamed('otp');
+            });
+      } else {
+        context.goNamed('otp');
+      }
     });
-
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Add your logo GIF here
-            Image.asset(
-              'assets/logo.gif', // Replace with the path to your GIF
-              height: 150,
-              width: 150,
-            ),
-            const SizedBox(height: 20),
-            const Text(
-              'Rent Schedule App',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-          ],
-        ),
-      ),
-    );
+    return const Scaffold(body: Center(child: CircularProgressIndicator()));
   }
 }

@@ -12,7 +12,20 @@
           "package_name": "com.example.rentschedule"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "212659433738-mupg7aqaueosscih8ghbmc8suf8gbe59.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.rentschedule",
+            "certificate_hash": "8127443760b4d61a49dad9ad1bab6da26277f8a9"
+          }
+        },
+        {
+          "client_id": "212659433738-3qen4mg2jpv5mh02426hqc79q9p5be77.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAECjx_hw5WQMbV2-7nygL8nSHL05Q9wXs"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "212659433738-3qen4mg2jpv5mh02426hqc79q9p5be77.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "212659433738-2if851p6irdh2tkaugulmf4mrql74nco.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.rentschedule"
+              }
+            }
+          ]
         }
       }
     }

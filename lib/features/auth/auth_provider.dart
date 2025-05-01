@@ -34,6 +34,14 @@ class AuthProvider extends ChangeNotifier {
 
   Profiles? get profile => _profile;
 
+  bool isLandlord() {
+    return profile?.role == Role.LANDLORD;
+  }
+
+  bool isTenant() {
+    return profile?.role == Role.TENANT;
+  }
+
   Future<AuthResponse> signUp({
     required String email,
     required String password,

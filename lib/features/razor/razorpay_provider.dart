@@ -11,15 +11,22 @@ class RazorpayProvider extends ChangeNotifier {
   final subscriptionFormKey = GlobalKey<FormState>();
 
   // Plan controllers
+  final emailController = TextEditingController();
   final amountController = TextEditingController();
   final totalCountController = TextEditingController();
   final quantityController = TextEditingController(text: '1');
   bool customerNotify = false;
-  DateTime? startAt;
+  DateTime startAt = DateTime.now();
 
   RazorpayProvider(this._razorpayService, this._loader);
 
   String? shortUrl;
+
+  final startDateController = TextEditingController();
+
+  // need to check if any subscription is created for this tenant
+  // if yes then show the subscription details
+  // if no then show the subscription form
 
   Future<void> createSubscription() async {
     _loader.showLoader();
@@ -31,7 +38,7 @@ class RazorpayProvider extends ChangeNotifier {
       //context.showErro(response.error!);
       shortUrl = null;
     } else {
-      shortUrl = response.data;
+      shortUrl = response.data?.pendingSubscriptions?.first.shortUrl;
     }
 
     _loader.hideLoader();
@@ -40,11 +47,14 @@ class RazorpayProvider extends ChangeNotifier {
 
   SubscriptionRequest? get subscription {
     if (!formKey.currentState!.validate()) return null;
+    int startAtValue = startAt.millisecondsSinceEpoch ~/ 1000;
+
     return SubscriptionRequest(
       totalCount: int.parse(totalCountController.text.trim()),
       quantity: int.tryParse(quantityController.text.trim()) ?? 1,
-      startAt: startAt?.millisecondsSinceEpoch,
+      startAt: startAtValue,
       amount: int.parse(amountController.text.trim()) * 100,
+      email: emailController.text,
     );
   }
 

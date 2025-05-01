@@ -4,9 +4,11 @@ import 'package:rentschedule/features/razor/razorpay_provider.dart';
 import 'package:rentschedule/features/razor/razorpay_service.dart';
 import 'package:rentschedule/features/razor/subscription_list_screen.dart';
 import 'package:rentschedule/providers/loader_provider.dart';
+import 'package:rentschedule/screens/landlord_successfull_subscription.dart';
 import 'package:rentschedule/strings.dart';
 import 'package:rentschedule/utils/form_field_wrapper.dart';
 import 'package:rentschedule/utils/form_vlidators.dart';
+import 'package:rentschedule/utils/utils.dart';
 import 'package:rentschedule/widgets/base_screen.dart';
 import 'package:rentschedule/widgets/bulleting_point.dart';
 import 'package:rentschedule/widgets/global_loader_screen.dart';
@@ -69,9 +71,28 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                                   "You only need to enter a few required fields to set this up.",
                                 ),
                                 const BulletText(
-                                  "Amount, Billing Count, and Start Date are mandatory.",
+                                  "Tenant email, amount, Billing Count, and Start Date are mandatory.",
                                 ),
                                 const SizedBox(height: 24),
+                                FormFieldWrapper(
+                                  child: TextFormField(
+                                    key: const ValueKey('email'),
+                                    controller: provider.emailController,
+                                    decoration: const InputDecoration(
+                                      labelText: 'Email',
+                                    ),
+                                    keyboardType: TextInputType.emailAddress,
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Email is required';
+                                      }
+                                      if (!isValidEmail(value)) {
+                                        return 'Enter a valid email address';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                ),
                                 FormFieldWrapper(
                                   child: TextFormField(
                                     controller: provider.amountController,
@@ -108,6 +129,46 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                                     keyboardType: TextInputType.number,
                                   ),
                                 ),
+                                FormFieldWrapper(
+                                  child: TextFormField(
+                                    controller: provider.startDateController,
+                                    decoration: const InputDecoration(
+                                      labelText: 'Start Date',
+                                      suffixIcon: Icon(Icons.calendar_today),
+                                    ),
+                                    readOnly: true,
+                                    onTap: () async {
+                                      FocusScope.of(context).requestFocus(
+                                        FocusNode(),
+                                      ); // to prevent keyboard
+
+                                      DateTime? pickedDate =
+                                          await showDatePicker(
+                                            context: context,
+                                            initialDate: DateTime.now(),
+                                            firstDate: DateTime.now(),
+                                            lastDate: DateTime.now().add(
+                                              Duration(days: 365 * 2),
+                                            ),
+                                          );
+
+                                      if (pickedDate != null) {
+                                        provider.startDateController.text =
+                                            pickedDate.toIso8601String().split(
+                                              'T',
+                                            )[0];
+                                        provider.startAt =
+                                            pickedDate; // yyyy-MM-dd
+                                      }
+                                    },
+                                    validator: (val) {
+                                      if (val == null || val.isEmpty)
+                                        return 'Start date is required';
+                                      return null;
+                                    },
+                                  ),
+                                ),
+
                                 SizedBox(height: 20),
                                 ElevatedButton(
                                   onPressed: () {
@@ -124,31 +185,37 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                         ),
                       ),
                     )
-                    : BaseScreen(
-                      child: GlobalSuccessScreen(
-                        title: 'Subscription',
-                        message: 'Subscription created successfully!',
-                        child: ShareLinkWidget(
-                          shortUrl: provider.shortUrl!,
-                          deepLink: 'deepLink',
-                          playStoreLink: 'playStoreLink',
-                        ),
-                        details: [
-                          Text(
-                            'Subscription Amount: ${provider.amountController.text}',
-                          ),
-                        ],
-                        onGoBack: () {
-                          Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => SubscriptionListScreen(),
-                            ),
-                            (route) => false,
-                          );
-                        },
-                      ),
+                    : LandlordSubscriptionSuccessStepperScreen(
+                      subscription: provider.subscription!,
+                      shortUrl: provider.shortUrl!,
+                      onGoBack: () {},
+                      onCancelRequest: () {},
                     ),
+            // : BaseScreen(
+            //   child: GlobalSuccessScreen(
+            //     title: 'Subscription',
+            //     message: 'Subscription created successfully!',
+            //     child: ShareLinkWidget(
+            //       shortUrl: provider.shortUrl!,
+            //       deepLink: 'deepLink',
+            //       playStoreLink: 'playStoreLink',
+            //     ),
+            //     details: [
+            //       Text(
+            //         'Subscription Amount: ${provider.amountController.text}',
+            //       ),
+            //     ],
+            //     onGoBack: () {
+            //       Navigator.pushAndRemoveUntil(
+            //         context,
+            //         MaterialPageRoute(
+            //           builder: (context) => SubscriptionListScreen(),
+            //         ),
+            //         (route) => false,
+            //       );
+            //     },
+            //   ),
+            // ),
           );
         },
       ),

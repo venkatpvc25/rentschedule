@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:rentschedule/models/api_response.dart';
 import 'package:rentschedule/models/subscription_request.dart';
+import 'package:rentschedule/models/tenant.dart';
 import 'package:rentschedule/services/dio_error_handler.dart';
 import 'package:rentschedule/services/dio_service.dart';
 
@@ -32,7 +33,7 @@ class RazorpayService {
     }
   }
 
-  Future<ApiResponse<String>> createSubscription(
+  Future<ApiResponse<Tenant>> createSubscription(
     SubscriptionRequest? subscriptionRequest,
   ) async {
     try {
@@ -42,9 +43,9 @@ class RazorpayService {
       );
 
       if (response.statusCode == 200) {
-        return ApiResponse<String>.fromJson(
+        return ApiResponse<Tenant>.fromJson(
           response.data,
-          (data) => data as String,
+          (data) => Tenant.fromJson(data),
         );
       } else {
         return ApiResponse.error("Unexpected status: ${response.statusCode}");

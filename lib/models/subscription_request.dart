@@ -3,12 +3,14 @@ class SubscriptionRequest {
   final int quantity;
   final int amount;
   final int? startAt;
+  final String email;
 
   SubscriptionRequest({
     required this.totalCount,
     required this.quantity,
     required this.amount,
     required this.startAt,
+    required this.email,
   });
 
   Map<String, dynamic> toJson() {
@@ -16,7 +18,8 @@ class SubscriptionRequest {
       'totalCount': totalCount,
       'quantity': quantity,
       'amount': amount,
-      if (startAt != null) 'start_at': startAt,
+      'email': email,
+      if (startAt != null) 'startAt': startAt,
     };
   }
 

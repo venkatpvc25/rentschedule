@@ -1,21 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:rentschedule/theme/theme.dart';
 
 extension MessageExtension on BuildContext {
   void showMessage(String message) {
     ScaffoldMessenger.of(this).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: const Color.fromARGB(255, 82, 142, 190),
+        backgroundColor: AppTheme.lightTheme.primaryColor,
       ),
     );
   }
 
   void showError(String message) {
     ScaffoldMessenger.of(this).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: const Color.fromARGB(255, 165, 103, 98),
-      ),
+      SnackBar(content: Text(message), backgroundColor: Colors.red),
     );
   }
 }

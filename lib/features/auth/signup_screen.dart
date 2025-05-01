@@ -91,25 +91,27 @@ class _EmailAuthScreenState extends State<EmailAuthScreen> {
                         if (_formKey.currentState!.validate()) {
                           final result = await auth.sendOtp();
                           if (result.success) {
-                            context.showMessage(
-                              result.message ?? 'OTP sent successfully',
-                            );
+                            context.showMessage('OTP sent successfully');
                           } else {
-                            context.showError(
-                              result.message ?? 'Error sending OTP',
-                            );
+                            context.showError('Error sending OTP');
                           }
                         }
                       } else {
                         final result = await auth.signInWithOtp(
                           onVerified: (user) async {
                             if (user != null) {
-                              final result = await OnboardingService()
-                                  .onBoardingUser(
-                                    Profiles.fromSupabaseUser(user),
-                                  );
-                              auth.profile = result.data;
-                              context.pushReplacementNamed('dashboard');
+                              final onboardingResult = await OnboardingService()
+                                  .onBoardingUser(user.email ?? '');
+                              auth.profile = onboardingResult.data;
+                              if (onboardingResult
+                                      .data
+                                      ?.pendingSubscription
+                                      .isNotEmpty ??
+                                  false) {
+                                context.pushNamed('webView');
+                              } else {
+                                context.pushReplacementNamed('dashboard');
+                              }
                             } else {
                               context.showError('Invalid OTP');
                             }
