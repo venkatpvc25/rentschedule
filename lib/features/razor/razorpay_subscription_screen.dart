@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rentschedule/features/razor/razorpay_provider.dart';
 import 'package:rentschedule/features/razor/razorpay_service.dart';
-import 'package:rentschedule/features/razor/subscription_list_screen.dart';
 import 'package:rentschedule/providers/loader_provider.dart';
 import 'package:rentschedule/screens/landlord_successfull_subscription.dart';
 import 'package:rentschedule/strings.dart';
@@ -12,18 +11,8 @@ import 'package:rentschedule/utils/utils.dart';
 import 'package:rentschedule/widgets/base_screen.dart';
 import 'package:rentschedule/widgets/bulleting_point.dart';
 import 'package:rentschedule/widgets/global_loader_screen.dart';
-import 'package:rentschedule/widgets/share_link.dart';
-import 'package:rentschedule/widgets/successfull_screen.dart';
 
-// landlord subscription screen
-// This screen allows the landlord to create a subscription for the tenant
-// using Razorpay. It includes a form for the landlord to enter their email,
-// contact number, and the amount for the subscription. Upon submission,
-
-// need to change from here that once subscription is created, it should
-// send an email to tenant with the subscription link
-// and the tenant should be able to pay the subscription using Razorpay
-// landlord needs to move to  succcssfully subscription created screen with tenant details on it.
+// TODO: Razorpay Addons
 
 class SubscriptionScreen extends StatefulWidget {
   @override

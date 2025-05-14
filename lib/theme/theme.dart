@@ -12,8 +12,6 @@ class AppTheme {
       onSecondary: Colors.black, // Text on secondary
       error: Colors.red,
       onError: Colors.white,
-      background: Color(0xFFF9F9F9), // Overall page background
-      onBackground: Colors.black,
       surface: Colors.white, // Cards, containers
       onSurface: Colors.black87,
     ),
@@ -51,8 +49,6 @@ class AppTheme {
       onSecondary: Colors.white,
       error: Colors.red,
       onError: Colors.black,
-      background: Color(0xFF121212),
-      onBackground: Colors.white,
       surface: Color(0xFF1E1E1E),
       onSurface: Colors.white70,
     ),

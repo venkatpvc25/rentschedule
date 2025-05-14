@@ -1,3 +1,6 @@
+import 'package:rentschedule/models/tenant.dart';
+import 'package:rentschedule/services/tenancy_service.dart';
+
 class Tenancy {
   final int? tenancyId;
   final int? landlordId;
@@ -6,9 +9,10 @@ class Tenancy {
   final double? rentAmount;
   final DateTime? startDate;
   final DateTime? endDate;
-  final String? status;
+  final TenancyAction? status;
   final DateTime? createdAt;
   final DateTime? modifiedAt;
+  final Tenant? tenant;
 
   Tenancy({
     this.tenancyId,
@@ -21,6 +25,7 @@ class Tenancy {
     this.status,
     this.createdAt,
     this.modifiedAt,
+    this.tenant,
   });
 
   factory Tenancy.fromJson(Map<String, dynamic> json) {
@@ -36,7 +41,10 @@ class Tenancy {
               : null,
       endDate:
           json['end_date'] != null ? DateTime.parse(json['end_date']) : null,
-      status: json['status'] as String?,
+      status:
+          json['status'] != null
+              ? TenancyAction.fromString(json['status'])
+              : null,
       createdAt:
           json['created_at'] != null
               ? DateTime.parse(json['created_at'])
@@ -45,7 +53,23 @@ class Tenancy {
           json['modified_at'] != null
               ? DateTime.parse(json['modified_at'])
               : null,
+      tenant: json['tenants'] != null ? Tenant.fromJson(json['tenants']) : null,
     );
+  }
+
+  bool get isExpired {
+    if (status == null) return false;
+    return status == TenancyAction.CANCEL;
+  }
+
+  bool get isPaused {
+    if (status == null) return false;
+    return status == TenancyAction.PAUSE;
+  }
+
+  bool get isEnded {
+    if (status == null) return false;
+    return status == TenancyAction.ENDED;
   }
 
   Map<String, dynamic> toJson() {
@@ -61,5 +85,55 @@ class Tenancy {
       'created_at': createdAt?.toIso8601String(),
       'modified_at': modifiedAt?.toIso8601String(),
     };
+  }
+
+  Tenancy copyWith({
+    int? tenancyId,
+    int? landlordId,
+    int? tenantId,
+    String? propertyAddress,
+    double? rentAmount,
+    DateTime? startDate,
+    DateTime? endDate,
+    TenancyAction? status,
+    DateTime? createdAt,
+    DateTime? modifiedAt,
+  }) {
+    return Tenancy(
+      tenancyId: tenancyId ?? this.tenancyId,
+      landlordId: landlordId ?? this.landlordId,
+      tenantId: tenantId ?? this.tenantId,
+      propertyAddress: propertyAddress ?? this.propertyAddress,
+      rentAmount: rentAmount ?? this.rentAmount,
+      startDate: startDate ?? this.startDate,
+      endDate: endDate ?? this.endDate,
+      status: status ?? this.status,
+      createdAt: createdAt ?? this.createdAt,
+      modifiedAt: modifiedAt ?? this.modifiedAt,
+    );
+  }
+
+  List<TenancyAction> availableActions() {
+    final List<TenancyAction> actions = [];
+
+    actions.addAll([
+      TenancyAction.VIEW,
+      TenancyAction.EDIT,
+      TenancyAction.SEND_REMINDER,
+    ]);
+
+    if (isPaused) {
+      actions.add(TenancyAction.RESUME);
+    } else {
+      actions.add(TenancyAction.PAUSE);
+    }
+    if (isExpired) {
+      actions.add(TenancyAction.ENDED);
+    }
+    if (!isEnded) {
+      actions.add(TenancyAction.CANCEL);
+    }
+
+    return actions;
   }
 }

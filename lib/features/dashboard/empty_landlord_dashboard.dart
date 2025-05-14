@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rentschedule/features/auth/auth_provider.dart';
 import 'package:rentschedule/models/tenancy.dart';
+import 'package:rentschedule/services/tenancy_service.dart';
 import 'package:rentschedule/theme/theme.dart';
+import 'package:rentschedule/utils/global_error_handler.dart';
 
 class EmptyLandlordDashboard extends StatelessWidget {
   const EmptyLandlordDashboard({super.key});
@@ -39,24 +41,26 @@ class EmptyLandlordDashboard extends StatelessWidget {
             ),
           ),
         )
-        : Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            DashboardSummaryCards(
-              totalTenancies: tenancies.length,
-              totalRent: tenancies.fold(
-                0,
-                (sum, t) => sum + (t.rentAmount ?? 0),
+        : SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              DashboardSummaryCards(
+                totalTenancies: tenancies.length,
+                totalRent: tenancies.fold(
+                  0,
+                  (sum, t) => sum + (t.rentAmount ?? 0),
+                ),
               ),
-            ),
 
-            // PendingActionsSection(
-            //   pendingActions: ['Confirm rent receipt for 123 Main St'],
-            // ),
-            TenancyListSection(tenancies: tenancies),
-            const SizedBox(height: 24),
-          ],
+              // PendingActionsSection(
+              //   pendingActions: ['Confirm rent receipt for 123 Main St'],
+              // ),
+              TenancyListSection(tenancies: tenancies),
+              const SizedBox(height: 24),
+            ],
+          ),
         );
   }
 }
@@ -114,34 +118,44 @@ class TenancyListSection extends StatelessWidget {
 
   const TenancyListSection({super.key, required this.tenancies});
 
+  // I need to update tenancies list once I received response from server
+  void updateTenancies(
+    BuildContext context,
+    int tenancyId,
+    TenancyAction action,
+  ) async {
+    final response = await TenancyService().performAction(action, tenancyId);
+    if (response.data != null && response.data == true) {
+      context.showMessage("Tenancy ${action.name} successfully");
+      final auth = Provider.of<AuthProvider>(context, listen: false);
+      auth.updateTenancies(tenancyId, action);
+    } else {
+      context.showError("Unble to cancel tenancy");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            _sectionTitle("Your Tenancies"),
-            Expanded(
-              child: Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(1),
-                ),
-                elevation: 01,
-                child: Expanded(
-                  child: ListView(
-                    children:
-                        tenancies
-                            .map((tenancy) => buildTenancyCard(tenancy))
-                            .toList(),
-                  ),
-                ),
-              ),
+    return Padding(
+      padding: const EdgeInsets.all(12.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          _sectionTitle("Your Tenancies"),
+          Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(1),
             ),
-          ],
-        ),
+            elevation: 01,
+            child: Column(
+              children:
+                  tenancies
+                      .map((tenancy) => buildTenancyCard(tenancy, context))
+                      .toList(),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -151,43 +165,61 @@ class TenancyListSection extends StatelessWidget {
     style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
   );
 
-  Widget buildTenancyCard(Tenancy tenancy) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      margin: EdgeInsets.symmetric(vertical: 8),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "tenancy.tenantName",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 4),
-            Text("Unit: &, Rent: ₹${tenancy.rentAmount}"),
-            SizedBox(height: 4),
-            Text("Next Due: ${tenancy.createdAt}"),
-            SizedBox(height: 12),
-            Wrap(
-              spacing: 8,
-              children: [
-                ElevatedButton(
-                  onPressed: () => {},
-                  child: Text("Send Reminder"),
-                ),
-                OutlinedButton(onPressed: () => {}, child: Text("Renew")),
-                OutlinedButton(
-                  onPressed: () => {},
-                  style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
-                  child: Text("Cancel"),
-                ),
-                TextButton(onPressed: () => {}, child: Text("View History")),
-              ],
-            ),
-          ],
+  Widget buildTenancyCard(Tenancy tenancy, BuildContext context) {
+    return GestureDetector(
+      child: Container(
+        //shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(1)),
+        //margin: EdgeInsets.symmetric(vertical: 8),
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(color: Colors.grey.shade300, width: 1),
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "${tenancy.tenant?.profile?.fullName}",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  popupMenu(tenancy, context),
+                ],
+              ),
+              SizedBox(height: 4),
+              Text("Unit: &, Rent: ₹${tenancy.rentAmount}"),
+              SizedBox(height: 4),
+              Text("Next Due: ${tenancy.createdAt}"),
+              //SizedBox(height: 12),
+            ],
+          ),
         ),
       ),
+    );
+  }
+
+  Widget popupMenu(Tenancy tenancy, BuildContext context) {
+    return PopupMenuButton<TenancyAction>(
+      icon: Icon(Icons.more_vert),
+      onSelected: (action) async {
+        action.perform(
+          context: context,
+          updateTenancies:
+              () => updateTenancies(context, tenancy.tenancyId!, action),
+        );
+      },
+      itemBuilder: (context) {
+        return tenancy.availableActions().map((entry) {
+          return PopupMenuItem<TenancyAction>(
+            value: entry,
+            child: Text(entry.value),
+          );
+        }).toList();
+      },
     );
   }
 }

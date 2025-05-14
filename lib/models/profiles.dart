@@ -1,5 +1,6 @@
 import 'package:rentschedule/models/pending_subscriptions.dart';
 import 'package:rentschedule/models/tenancy.dart';
+import 'package:rentschedule/services/tenancy_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class Profiles {
@@ -70,11 +71,54 @@ class Profiles {
     );
   }
 
-  Profiles copyWith({String? fcmToken, String? email}) {
+  Profiles copyWith({
+    String? email,
+    String? passwordHash,
+    Role? role,
+    String? firstName,
+    String? lastName,
+    List<PendingSubscription>? pendingSubscription,
+    List<Tenancy>? tenancies,
+    String? fcmToken,
+  }) {
     return Profiles(
-      fcmToken: fcmToken ?? this.fcmToken,
       email: email ?? this.email,
+      passwordHash: passwordHash ?? this.passwordHash,
+      role: role ?? this.role,
+      firstName: firstName ?? this.firstName,
+      lastName: lastName ?? this.lastName,
+      pendingSubscription: pendingSubscription ?? this.pendingSubscription,
+      tenancies: tenancies ?? this.tenancies,
+      fcmToken: fcmToken ?? this.fcmToken,
     );
+  }
+
+  updateTenancies(int tenancyId, TenancyAction action) {
+    List<Tenancy> updatedTenancies =
+        tenancies.map((tenancy) {
+          if (tenancy.tenancyId == tenancyId) {
+            return tenancy.copyWith(status: action);
+          }
+          return tenancy;
+        }).toList();
+    return copyWith(tenancies: updatedTenancies);
+  }
+
+  // fullName need to handle incase firstName or lastName is null
+
+  String get fullName {
+    final hasFirst = (firstName?.trim().isNotEmpty ?? false);
+    final hasLast = (lastName?.trim().isNotEmpty ?? false);
+
+    if (hasFirst && hasLast) {
+      return '${firstName!.trim()} ${lastName!.trim()}';
+    } else if (hasFirst) {
+      return firstName!.trim();
+    } else if (hasLast) {
+      return lastName!.trim();
+    } else {
+      return 'Name Not Provided';
+    }
   }
 }
 

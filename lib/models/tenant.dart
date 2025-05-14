@@ -1,3 +1,5 @@
+import 'package:rentschedule/models/profiles.dart';
+
 class Tenant {
   final int? tenantId;
   final int? profileId;
@@ -5,6 +7,7 @@ class Tenant {
   final DateTime? createdAt;
   final DateTime? modifiedAt;
   final List<PendingSubscription>? pendingSubscriptions;
+  final Profiles? profile;
 
   Tenant({
     this.tenantId,
@@ -13,6 +16,7 @@ class Tenant {
     this.createdAt,
     this.modifiedAt,
     this.pendingSubscriptions,
+    this.profile,
   });
 
   factory Tenant.fromJson(Map<String, dynamic> json) {
@@ -20,6 +24,8 @@ class Tenant {
       tenantId: json['tenant_id'] as int?,
       profileId: json['profile_id'] as int?,
       phoneNumber: json['phone_number'] as String?,
+      profile:
+          json['profiles'] != null ? Profiles.fromJson(json['profiles']) : null,
       // createdAt:
       //     json['created_at'] != null
       //         ? DateTime.parse(json['created_at'])

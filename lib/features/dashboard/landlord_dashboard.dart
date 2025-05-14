@@ -3,7 +3,6 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:rentschedule/features/auth/auth_provider.dart';
 import 'package:rentschedule/features/dashboard/empty_landlord_dashboard.dart';
-import 'package:rentschedule/screens/dashboard_screen.dart';
 
 class LandlordDashboardScreen extends StatefulWidget {
   const LandlordDashboardScreen({super.key});
@@ -54,12 +53,12 @@ class _LandlordDashboardScreenState extends State<LandlordDashboardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: screens[currentIndex],
-      floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: Colors.deepPurple,
-        onPressed: () => context.pushNamed('rent-schedule'),
-        icon: const Icon(Icons.add),
-        label: const Text('Add Tenancy'),
-      ),
+      // floatingActionButton: FloatingActionButton.extended(
+      //   backgroundColor: Colors.deepPurple,
+      //   onPressed: () => context.pushNamed('rent-schedule'),
+      //   icon: const Icon(Icons.add),
+      //   label: const Text('Add Tenancy'),
+      // ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: currentIndex,
         onTap: (index) => setState(() => currentIndex = index),

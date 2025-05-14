@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:rentschedule/features/auth/auth_provider.dart';
-import 'package:rentschedule/models/profiles.dart';
 import 'package:rentschedule/services/onboarding_service.dart';
 import 'package:rentschedule/utils/global_error_handler.dart';
 import 'package:rentschedule/widgets/base_screen.dart';

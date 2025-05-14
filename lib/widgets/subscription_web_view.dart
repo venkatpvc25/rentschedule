@@ -17,7 +17,7 @@ class WebView extends StatelessWidget {
           ..setJavaScriptMode(JavaScriptMode.unrestricted)
           ..loadRequest(
             Uri.parse(
-              shortUrl ?? auth.profile?.pendingSubscription?[0].shortUrl ?? '',
+              shortUrl ?? auth.profile?.pendingSubscription[0].shortUrl ?? '',
             ),
           );
 

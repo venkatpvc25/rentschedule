@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:rentschedule/logger.dart';
 import 'package:rentschedule/models/api_response.dart';
 import 'package:rentschedule/models/profiles.dart';
+import 'package:rentschedule/models/tenancy.dart';
 import 'package:rentschedule/services/onboarding_service.dart';
+import 'package:rentschedule/services/tenancy_service.dart';
 import 'package:rentschedule/supbase.dart';
 import 'package:rentschedule/providers/loader_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -120,6 +122,13 @@ class AuthProvider extends ChangeNotifier {
       }
     } finally {
       loader.hideLoader();
+      notifyListeners();
+    }
+  }
+
+  updateTenancies(int tenancyId, TenancyAction action) {
+    if (profile != null) {
+      profile = profile?.updateTenancies(tenancyId, action);
       notifyListeners();
     }
   }
